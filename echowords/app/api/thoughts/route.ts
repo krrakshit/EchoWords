@@ -1,48 +1,40 @@
-import { NextRequest, NextResponse } from "next/server";
-import prisma from "@/lib/prisma";
-import { authenticateToken } from "@/lib/auth";
+import {  NextResponse } from "next/server";
+import prisma from "@/lib/prisma"
+
 
 export async function GET() {
   try {
     const thoughts = await prisma.thought.findMany({
-      select: {
-        id: true,
-        text: true,
-        createdAt: true,
-        author: { select: { name: true } }, // Fetch only the author's name
-      },
+      include: { author: true }, // Ensure author data is included
       orderBy: { createdAt: "desc" },
     });
 
-    return NextResponse.json(thoughts, { status: 200 });
-  } catch {
-    return NextResponse.json({ error: "Failed to fetch thoughts" }, { status: 500 });
+    return NextResponse.json(thoughts);
+  } catch (error) {
+    console.error("Error fetching thoughts:", error);
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }
 
-export async function POST(req: NextRequest) {
+export async function POST(req: Request) {
   try {
-    const authData = await authenticateToken(req);
-    
-    // Check if authData is an error response
-    if (!authData || typeof authData === "object" && "error" in authData) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    const { text, userId } = await req.json(); // Make sure `userId` is received
 
-    const { text } = await req.json();
-    if (!text || text.length > 60) {
-      return NextResponse.json({ error: "Thought must be under 60 words" }, { status: 400 });
+    if (!userId) {
+      return NextResponse.json({ error: "User not authenticated" }, { status: 401 });
     }
 
     const newThought = await prisma.thought.create({
       data: {
         text,
-        authorId: (authData as { userId: string }).userId, // Type assertion to access userId
+        authorId: userId, // Ensure the thought is linked to a user
       },
+      include: { author: true }, // Include author data in response
     });
 
-    return NextResponse.json(newThought, { status: 201 });
-  } catch {
-    return NextResponse.json({ error: "Failed to add thought" }, { status: 500 });
+    return NextResponse.json(newThought);
+  } catch (error) {
+    console.error("Error adding thought:", error);
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }
