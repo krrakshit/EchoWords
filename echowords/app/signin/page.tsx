@@ -1,55 +1,74 @@
-"use client"
+"use client";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
-import { useState, ChangeEvent, FormEvent } from "react";
+
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function Signin() {
-  const [form, setForm] = useState({ username: "", password: "" });
+  const router = useRouter();
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
 
-  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
-
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleSignin = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log(form);
+    setError("");
+
+    const response = await fetch("/api/auth/signin", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ username, password }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      setError(data.error || "Something went wrong");
+      return;
+    }
+
+    // Store JWT token in localStorage or cookies
+    localStorage.setItem("token", data.token);
+
+    // Redirect to homepage or dashboard
+    router.push("/dashboard");
   };
 
   return (
-    <div className="min-h-screen flex flex-col justify-between bg-white text-lightBlack">
-      <Header />
-      <main className="flex flex-col items-center justify-center flex-grow p-6">
-        <h2 className="text-2xl font-semibold text-gray-900">Welcome Back</h2>
-        <p className="text-gray-900 mt-1">Sign in to continue sharing your thoughts.</p>
-
-        <form onSubmit={handleSubmit} className="mt-6 w-80 bg-white p-6 rounded-lg shadow-md border border-gray-300">
+    <div>
+        <Header/>
+    <div className="flex justify-center items-center min-h-screen bg-gray-100">
+      <div className="w-96 p-6 bg-white rounded-lg shadow-md">
+        <h2 className="text-2xl font-bold mb-4 text-center">Signin</h2>
+        {error && <p className="text-red-500 text-sm mb-3">{error}</p>}
+        <form onSubmit={handleSignin}>
           <input
             type="text"
-            name="username"
             placeholder="Username"
-            className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500"
-            onChange={handleChange}
+            className="w-full p-2 mb-3 border rounded"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
             required
-          />
+            />
           <input
             type="password"
-            name="password"
             placeholder="Password"
-            className="w-full mt-3 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500"
-            onChange={handleChange}
+            className="w-full p-2 mb-3 border rounded"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
             required
-          />
-          <button type="submit" className="bg-gray-900 text-white w-full p-2 rounded-md shadow-sm mt-4 hover:bg-gray-700 transition">
-            Sign In
+            />
+          <button type="submit" className="w-full bg-black text-white p-2 rounded hover:bg-gray-800">
+            Signin
           </button>
         </form>
-
-        <p className="mt-4 text-gray-800">
-          Don&apos;t have an account? 
-          <a href="/signup" className="text-lightBlack hover:underline ml-1">Sign Up</a>
+        <p className="text-sm text-center mt-3">
+          Don`&apos`t have an account? <a href="/signup" className="text-blue-500">Signup</a>
         </p>
-      </main>
-      <Footer />
+      </div>
     </div>
+    <Footer/>
+            </div>
   );
 }

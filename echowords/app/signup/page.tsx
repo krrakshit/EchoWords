@@ -1,63 +1,79 @@
-"use client"
+"use client";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
-import { useState, ChangeEvent, FormEvent } from "react";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function Signup() {
-  const [form, setForm] = useState({ name: "", username: "", password: "" });
+  const router = useRouter();
+  const [name, setName] = useState("");
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
 
-  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
-
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log(form);
+    setError("");
+
+    const response = await fetch("/api/auth/signup", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name, username, password }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      setError(data.error || "Something went wrong");
+      return;
+    }
+
+    // Redirect to signin page after successful signup
+    router.push("/signin");
   };
 
   return (
-    <div className="min-h-screen flex flex-col justify-between bg-white text-lightBlack">
-      <Header />
-      <main className="flex flex-col items-center justify-center flex-grow p-6">
-        <h2 className="text-2xl font-semibold text-black">Create an Account</h2>
-        <p className="text-gray-500 mt-1">Join us and start sharing your thoughts!</p>
-
-        <form onSubmit={handleSubmit} className="mt-6 w-80 bg-white p-6 rounded-lg shadow-md border border-gray-300">
+    <div>
+    <Header/>
+    <div className="flex justify-center items-center min-h-screen bg-gray-100">
+      <div className="w-96 p-6 bg-white rounded-lg shadow-md">
+        <h2 className="text-2xl font-bold mb-4 text-center">Signup</h2>
+        {error && <p className="text-red-500 text-sm mb-3">{error}</p>}
+        <form onSubmit={handleSignup}>
           <input
             type="text"
-            name="name"
-            placeholder="Full Name"
-            className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500"
-            onChange={handleChange}
+            placeholder="Name"
+            className="w-full p-2 mb-3 border rounded"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
             required
-          />
+            />
           <input
             type="text"
-            name="username"
             placeholder="Username"
-            className="w-full mt-3 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500"
-            onChange={handleChange}
+            className="w-full p-2 mb-3 border rounded"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
             required
-          />
+            />
           <input
             type="password"
-            name="password"
             placeholder="Password"
-            className="w-full mt-3 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500"
-            onChange={handleChange}
+            className="w-full p-2 mb-3 border rounded"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
             required
-          />
-          <button type="submit" className="bg-gray-900 text-white w-full p-2 rounded-md shadow-sm mt-4 hover:bg-gray-700 transition">
-            Sign Up
+            />
+          <button type="submit" className="w-full bg-black text-white p-2 rounded hover:bg-gray-800">
+            Signup
           </button>
         </form>
-
-        <p className="mt-4 text-gray-800">
-          Already have an account? 
-          <a href="/signin" className="text-lightBlack hover:underline ml-1">Sign In</a>
+        <p className="text-sm text-center mt-3">
+          Already have an account? <a href="/signin" className="text-blue-500">Signin</a>
         </p>
-      </main>
-      <Footer />
+      </div>
+    </div>
+    <Footer/>
     </div>
   );
 }
