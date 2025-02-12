@@ -1,0 +1,27 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL") // Store this in your .env file
+}
+
+model User {
+  id        String   @id @default(uuid())
+  name      String
+  username  String   @unique
+  password  String
+  thoughts  Thought[] // One-to-many relationship (User → Thoughts)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Thought {
+  id        String   @id @default(uuid())
+  text      String   @db.VarChar(300) // Limit thoughts to 60 words
+  author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  authorId  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
