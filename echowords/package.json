@@ -3,14 +3,16 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-     "postinstall": "prisma generate",
-     "build": "prisma generate && next build"
+    "postinstall": "prisma generate",
+    "build": "prisma generate && next build",
+    "dev": "next dev"
   },
   "dependencies": {
     "@prisma/client": "^6.3.1",
     "bcryptjs": "^2.4.3",
     "jsonwebtoken": "^9.0.2",
     "next": "15.1.7",
+    "next-auth": "^4.24.11",
     "prisma": "^6.3.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
@@ -19,6 +21,7 @@
     "@eslint/eslintrc": "^3",
     "@types/bcryptjs": "^2.4.6",
     "@types/jsonwebtoken": "^9.0.8",
+    "@types/next-auth": "^3.13.0",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",

@@ -40,13 +40,13 @@ export default function Signin() {
         <Header/>
     <div className="flex justify-center items-center min-h-screen bg-gray-100">
       <div className="w-96 p-6 bg-white rounded-lg shadow-md">
-        <h2 className="text-2xl font-bold mb-4 text-center">Signin</h2>
+        <h2 className="text-2xl font-bold mb-4 text-center text-black">Signin</h2>
         {error && <p className="text-red-500 text-sm mb-3">{error}</p>}
         <form onSubmit={handleSignin}>
           <input
             type="text"
             placeholder="Username"
-            className="w-full p-2 mb-3 border rounded"
+            className="w-full p-2 mb-3 border rounded text-black placeholder-gray-800"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             required
@@ -54,7 +54,7 @@ export default function Signin() {
           <input
             type="password"
             placeholder="Password"
-            className="w-full p-2 mb-3 border rounded"
+            className="w-full p-2 mb-3 border rounded text-black placeholder-gray-800"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
@@ -63,8 +63,8 @@ export default function Signin() {
             Signin
           </button>
         </form>
-        <p className="text-sm text-center mt-3">
-          Don`&apos`t have an account? <a href="/signup" className="text-blue-500">Signup</a>
+        <p className="text-sm text-center mt-3 text-black">
+          Dont have an account? <a href="/signup" className="text-blue-500">Signup</a>
         </p>
       </div>
     </div>

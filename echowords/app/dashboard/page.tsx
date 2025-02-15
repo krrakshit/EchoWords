@@ -55,7 +55,7 @@ export default function Dashboard() {
     <div className="min-h-screen bg-gray-50 p-6">
       <div className="max-w-2xl mx-auto">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold">Your Thoughts</h1>
+          <h1 className="text-2xl font-bold text-black">Your Thoughts</h1>
           <button
             className="px-4 py-2 bg-black text-white rounded hover:bg-gray-800"
             onClick={() => setShowModal(true)}

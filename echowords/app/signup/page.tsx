@@ -37,13 +37,13 @@ export default function Signup() {
     <Header/>
     <div className="flex justify-center items-center min-h-screen bg-gray-100">
       <div className="w-96 p-6 bg-white rounded-lg shadow-md">
-        <h2 className="text-2xl font-bold mb-4 text-center">Signup</h2>
+        <h2 className="text-2xl font-bold mb-4 text-center text-black">Signup</h2>
         {error && <p className="text-red-500 text-sm mb-3">{error}</p>}
         <form onSubmit={handleSignup}>
           <input
             type="text"
             placeholder="Name"
-            className="w-full p-2 mb-3 border rounded"
+            className="w-full p-2 mb-3 border rounded text-black placeholder-gray-800"
             value={name}
             onChange={(e) => setName(e.target.value)}
             required
@@ -51,7 +51,7 @@ export default function Signup() {
           <input
             type="text"
             placeholder="Username"
-            className="w-full p-2 mb-3 border rounded"
+            className="w-full p-2 mb-3 border rounded text-black placeholder-gray-800"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             required
@@ -59,7 +59,7 @@ export default function Signup() {
           <input
             type="password"
             placeholder="Password"
-            className="w-full p-2 mb-3 border rounded"
+            className="w-full p-2 mb-3 border rounded text-black placeholder-gray-800"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
@@ -68,7 +68,7 @@ export default function Signup() {
             Signup
           </button>
         </form>
-        <p className="text-sm text-center mt-3">
+        <p className="text-sm text-center mt-3 text-black">
           Already have an account? <a href="/signin" className="text-blue-500">Signin</a>
         </p>
       </div>
