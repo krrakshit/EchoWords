@@ -1,11 +1,13 @@
-import {  NextResponse } from "next/server";
-import prisma from "@/lib/prisma"
+import { NextResponse, NextRequest } from "next/server";
+import prisma from "@/lib/prisma";
+import jwt from "jsonwebtoken";
 
+const JWT_SECRET = process.env.JWT_SECRET as string; // Ensure this is set in your .env file
 
 export async function GET() {
   try {
     const thoughts = await prisma.thought.findMany({
-      include: { author: true }, // Ensure author data is included
+      include: { author: true },
       orderBy: { createdAt: "desc" },
     });
 
@@ -16,23 +18,45 @@ export async function GET() {
   }
 }
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
   try {
-    const { text, userId } = await req.json(); // Make sure `userId` is received
-
-    if (!userId) {
-      return NextResponse.json({ error: "User not authenticated" }, { status: 401 });
+    // Extract token from headers
+    const authHeader = req.headers.get("authorization");
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    const token = authHeader.split(" ")[1];
+
+    // Verify JWT token
+    let decoded;
+    try {
+      decoded = jwt.verify(token, JWT_SECRET) as { userId: string; username: string };
+    } catch {
+      return NextResponse.json({ error: "Invalid token" }, { status: 401 });
+    }
+
+    const { text } = await req.json();
+    if (!text) {
+      return NextResponse.json({ error: "Text is required" }, { status: 400 });
+    }
+
+    // Ensure user exists in the database
+    const user = await prisma.user.findUnique({ where: { id: decoded.userId } });
+    if (!user) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
+    // Create a new thought
     const newThought = await prisma.thought.create({
       data: {
         text,
-        authorId: userId, // Ensure the thought is linked to a user
+        authorId: user.id,
       },
-      include: { author: true }, // Include author data in response
+      include: { author: true },
     });
 
-    return NextResponse.json(newThought);
+    return NextResponse.json(newThought, { status: 201 });
   } catch (error) {
     console.error("Error adding thought:", error);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
