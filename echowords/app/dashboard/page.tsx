@@ -3,6 +3,8 @@
 import { useState, useEffect } from "react";
 import ThoughtCard from "../components/Thoughtcard";
 import AddThoughtModal from "../components/ThoughtModal";
+import Header from "../components/Header";
+import Footer from "../components/Footer";
 
 interface Thought {
   id: string;
@@ -52,6 +54,8 @@ export default function Dashboard() {
   };
 
   return (
+    <div>
+    <Header/>
     <div className="min-h-screen bg-gray-50 p-6">
       <div className="max-w-2xl mx-auto">
         <div className="flex justify-between items-center mb-6">
@@ -59,7 +63,7 @@ export default function Dashboard() {
           <button
             className="px-4 py-2 bg-black text-white rounded hover:bg-gray-800"
             onClick={() => setShowModal(true)}
-          >
+            >
             Add Thought
           </button>
         </div>
@@ -83,5 +87,7 @@ export default function Dashboard() {
 
       {showModal && <AddThoughtModal onClose={() => setShowModal(false)} onAdd={addThought} />}
     </div>
+    <Footer/>
+            </div>
   );
 }
